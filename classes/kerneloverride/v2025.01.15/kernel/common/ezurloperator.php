@@ -71,10 +71,9 @@ class eZURLOperator
                       $this->URLRootName => array( 'input' => true,
                                                    'output' => true,
                                                    'parameters' => true,
-                                                   'element-transformation' => true,
+                                                   'element-transformation' => false,
                                                    'transform-parameters' => true,
-                                                   'input-as-parameter' => 'always',
-                                                   'element-transformation-func' => 'urlTransformation'),
+                                                   'input-as-parameter' => 'always'),
                       $this->SysName => array( 'input' => true,
                                                'output' => true,
                                                'parameters' => true,
@@ -673,7 +672,10 @@ CODEPIECE;
                                             'default' => 'double' ),
                       'server_url' => array( 'type' => 'string',
                                              'required' => false,
-                                             'default' => 'relative' ) );
+                                             'default' => 'relative' ),
+                      'parameters' => array( 'type' => 'array',
+                                             'required' => false,
+                                             'default' => array() ) );
     }
 
     function modify( $tpl, $operatorName, $operatorParameters, $rootNamespace, $currentNamespace, &$operatorValue, $namedParameters, $placement )
@@ -870,61 +872,14 @@ CODEPIECE;
 
             case $this->URLName:
             {
-                $value = $operatorValue;
-
-                if ( is_object( $value ) )
-                {
-                    if ( $value instanceof eZContentObjectTreeNode )
-                    {
-                        $value = $value->attribute( 'url_alias' );
-                    }
-                    elseif ( $value instanceof eZContentObject )
-                    {
-                        $mainNode = $value->mainNode();
-                        $value = $mainNode ? $mainNode->attribute( 'url_alias' ) : '';
-                    }
-                    else
-                    {
-                        $value = (string)$value;
-                    }
-                }
-
-                if ( !is_string( $value ) || $value === '' ||
-                     preg_match( '#^[a-zA-Z0-9]+:|^//#', $value ) )
-                {
-                    $operatorValue = $value;
-                    eZURI::transformURI( $operatorValue, false, $namedParameters['server_url'] );
-                    break;
-                }
-
-                $path = eZURLAliasML::cleanURL( $value );
-                $targetSiteAccess = $this->targetSiteAccess( $path );
-
-                if ( $targetSiteAccess === false || $targetSiteAccess === $this->currentSiteAccessName() )
-                {
-                    $operatorValue = $this->stripPrefix( $path, $this->currentPathPrefix() );
-                    eZURI::transformURI( $operatorValue, false, $namedParameters['server_url'] );
-                }
-                else
-                {
-                    $operatorValue = $this->buildExternalURL( $targetSiteAccess, $path );
-                    eZURI::transformURI( $operatorValue, false, $namedParameters['server_url'] );
-                }
-
+                $operatorValue = eZURLMultisite::buildURL( $operatorValue, $namedParameters, 'ezurl' );
+                return;
             } break;
 
             case $this->URLRootName:
             {
-                if ( preg_match( "#^[a-zA-Z0-9]+:#", $operatorValue ) or
-                     substr( $operatorValue, 0, 2 ) == '//' )
-                     break;
-                if ( strlen( $operatorValue ) > 0 and
-                     $operatorValue[0] != '/' )
-                    $operatorValue = '/' . $operatorValue;
-
-                // Same as "ezurl" without "index.php" and the siteaccess name in the returned address.
-                eZURI::transformURI( $operatorValue, true, $namedParameters['server_url'] );
-
+                $operatorValue = eZURLMultisite::buildURL( $operatorValue, $namedParameters, 'ezroot' );
+                return;
             } break;
 
             case $this->SysName:
