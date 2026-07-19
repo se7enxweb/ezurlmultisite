@@ -1,0 +1,24 @@
+{
+    "name": "se7enxweb/ezurlmultisite",
+    "description": "eZ Publish extension which provides for a brand new way via no configuration kernel override features that replace at runtime the template operators which provide urls like ezurl and ezroot and bind content trees to siteaccess host names for true multisite content object resolution to url routes. Great for all large content websites and website networks. Great for smart developers!",
+    "type": "ezpublish-legacy-extension",
+    "keywords": [ "eZ Publish", "eZ Publish Legacy", "eZ Publish Platform", "ezurl-compatible", "kernel override class", "extension", "php", "override" ],
+    "homepage": "https://github.com/se7enxweb/ezurlmultisite",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name" : "7x",
+            "homepage": "https://se7enx.com",
+            "email": "info@se7enx.com",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.0.0",
+        "se7enxweb/exponential-legacy-installer": "*"
+    },
+    "extra": {
+        "ezpublish-legacy-extension-name": "ezurlmultisite"
+    }
+}
