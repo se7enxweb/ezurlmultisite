@@ -8,6 +8,7 @@ class eZURLMultisite
     private static $emptyPrefixSiteAccess = null;
     private static $currentNodeID = null;
     private static $ini = null;
+    private static $pathMap = null;
 
     /**
      * Returns the ezurlmultisite INI instance.
@@ -37,6 +38,7 @@ class eZURLMultisite
         self::$emptyPrefixSiteAccess = null;
         self::$currentNodeID = null;
         self::$ini = null;
+        self::$pathMap = null;
     }
 
     /**
@@ -475,6 +477,15 @@ class eZURLMultisite
             return self::$targetCache[$cacheKey];
         }
 
+        foreach ( self::pathMap() as $mapPath => $siteAccess )
+        {
+            if ( $mapPath !== '' && self::pathStartsWith( $path, $mapPath ) )
+            {
+                self::$targetCache[$cacheKey] = $siteAccess;
+                return $siteAccess;
+            }
+        }
+
         foreach ( self::prefixMap() as $prefix => $siteAccess )
         {
             if ( $prefix !== '' && self::pathStartsWith( $path, $prefix ) )
@@ -493,6 +504,15 @@ class eZURLMultisite
                 $fullPath = $node->attribute( 'path_identification_string' );
             }
             $fullPath = eZURLAliasML::cleanURL( $fullPath );
+
+            foreach ( self::pathMap() as $mapPath => $siteAccess )
+            {
+                if ( $mapPath !== '' && self::pathStartsWith( $fullPath, $mapPath ) )
+                {
+                    self::$targetCache[$cacheKey] = $siteAccess;
+                    return $siteAccess;
+                }
+            }
 
             foreach ( self::prefixMap() as $prefix => $siteAccess )
             {
@@ -696,6 +716,29 @@ class eZURLMultisite
         }
         uksort( $map, array( 'eZURLMultisite', 'comparePrefixLength' ) );
         return $map;
+    }
+
+    /**
+     * Convention-based path map sorted by longest path first.
+     * Maps a path to an explicit target siteaccess, overriding prefix detection.
+     */
+    public static function pathMap()
+    {
+        if ( self::$pathMap !== null )
+        {
+            return self::$pathMap;
+        }
+
+        $map = array();
+        $ini = self::ini();
+        if ( $ini->hasVariable( 'PathMap', 'Path' ) )
+        {
+            $map = $ini->variable( 'PathMap', 'Path' );
+        }
+
+        uksort( $map, array( 'eZURLMultisite', 'comparePrefixLength' ) );
+        self::$pathMap = $map;
+        return self::$pathMap;
     }
 
     /**
