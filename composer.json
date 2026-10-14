@@ -1,21 +1,29 @@
 {
     "name": "se7enxweb/ezurlmultisite",
-    "description": "Exponential kernel override extension featuring template operator php class overrides that replace at runtime the template operators like ezurl and ezroot to bind content trees to siteaccess host names for true multisite content object resolution to url routes. Great for all large content websites and website networks. Great for smart developers!",
+    "description": "Multisite-aware ezurl template operator for Exponential: links to content of another site of a multisite installation point to the siteaccess that serves that content (its SiteURL, without its PathPrefix) instead of to the current siteaccess. Configured per siteaccess by root node, no kernel override needed.",
     "type": "ezpublish-legacy-extension",
-    "keywords": [ "eZ Publish", "eZ Publish Legacy", "eZ Publish Platform", "ezurl-compatible", "kernel override class", "extension", "php", "override" ],
+    "keywords": [
+        "Exponential",
+        "Exponential Legacy",
+        "multisite",
+        "siteaccess",
+        "ezurl",
+        "template operator",
+        "extension",
+        "php"
+    ],
     "homepage": "https://github.com/se7enxweb/ezurlmultisite",
     "license": "GPL-2.0-or-later",
     "authors": [
         {
-            "name" : "7x",
+            "name": "7x",
             "homepage": "https://se7enx.com",
             "email": "info@se7enx.com",
             "role": "Developer"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
-        "php": ">=5.0.0",
+        "php": ">=7.4",
         "se7enxweb/exponential-legacy-installer": "*"
     },
     "extra": {
